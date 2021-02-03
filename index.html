@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head lang="zh-cn">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <title>代办事项</title>
+    <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="assets/css/normalize.css"/>
+    <link rel="stylesheet" href="assets/css/main.css"/>
+</head>
+<body>
+    <div id="main">
+        <div class="matter-left">
+            <div class="m-title">
+                <a href="#"><img src="assets/img/avatar.png"></a>
+                <span class="m-name">Admin</span>
+                <div class="m-icon">
+                    <i class="icon icon-search search"></i>
+                    <i class="icon icon-bell bell"></i>
+                </div>
+            </div>
+            <div class="m-content">
+                <ul class="menu">
+                    <li class="firt">
+                        <a href="">
+                            <i class="icon icon-file-text"></i>
+                            <h4>待办事项</h4>
+                            <span class="ad">1</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            <i class="icon icon-calendar"></i>
+                            <h4>日历清单</h4>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            <i class="icon icon-settings"></i>
+                            <h4>系统设置</h4>
+                        </a>
+                    </li>
+                </ul>
+                <div class="classify">
+                    <ul class="cl-ul">
+                        <li class="active">
+                            <a href="">清单</a>
+                        </li>
+                        <li>
+                            <a href="">标签</a>
+                        </li>
+                        <li>
+                            <a href="">自定义</a>
+                        </li>
+                    </ul>
+                    <div class="cl-content">
+                        <ul>
+                            <li>
+                                <i class="icon icon-plus-circle"></i>
+                                <a href="">添加清单</a>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                <i class="icon icon-alert-circle "></i>
+                                <a href="">未完成</a>
+                            </li>
+                            <li>
+                                <i class="icon icon-check-circle "></i>
+                                <a href="">已完成</a>
+                            </li>
+                            <li>
+                                <i class="icon icon-trash-2"></i>
+                                <a href="">垃圾桶</a>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                <i class="icon icon-power"></i>
+                                <a href="">退出</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="header">
+                <h2>添加</h2>
+            </div>
+            <form @submit.prevent="merge" class="task-form" >
+                <div class="task-input">
+                    <input v-model="currentTask.title" type="text" autocomplete="off" placeholder="请输入待办事项"/>
+                    <span class="icon icon-plus" @click="merge"></span>
+                    <span class="icon icon-more-horizontal-horizontal" @click="toggleInputDetail"></span>
+                </div>
+                <div v-if="currentTask.id || inputDetailShow" class="detail">
+                    <textarea v-model="currentTask.desc" placeholder="请输入具体描述"></textarea>
+                    <input type="datetime-local" v-model="currentTask.remind"/>
+                    <button type="submit">保存</button>
+                </div>
+            </form>
+            <div class="task-list">
+                <h2>待完成</h2>
+                <task :task="task" v-if="!task.completed" v-for="(task, index) in taskList" :key="task.id"></task>
+                <div v-if="noTodo" class="empty">没有待办事项，快去添加吧</div>
+            </div>
+            <div class="task-list">
+                <h2>已完成</h2>
+                <div v-if="task.completed" v-for="(task, index) in taskList" :key="task.id" class="item complete">
+                    <span class="icon toggle-complete" @click="toggleComplete(task.id)"></span>
+                    <span class="title">{{task.title}}</span>
+                    <div class="iconbar">
+                        <span class="icon icon-edit-2-2" @click="setCurrent(task)"></span>
+                        <span class="icon icon-trash-2" @click="remove(task.id)"></span>
+                        <span class="icon icon-more-horizontal-horizontal" @click="toggleDetail(task.id)"></span>
+                    </div>
+                    <div v-if="task.showDetail" class="detail">
+                        {{task.desc || '暂无详情'}} | {{task.remind || '暂无提醒时间'}}
+                    </div>
+                </div>
+                <div v-if="noCompleted" class="empty">一阵风吹过，什么都没做</div>
+            </div>
+        </div>
+        <div class="matter-right">
+
+        </div>
+    </div>
+    <audio id="remind-sound" class="remind-sound">
+        <source src="./sound/remind.mp3"/>
+    </audio>
+    <template id="task-tpl">
+        <div class="item">
+            <span class="icon toggle-complete" @click="action('toggleComplete', task.id)"></span>
+            <span class="title">{{task.title}}</span>
+            <div class="iconbar">
+                <span class="icon icon-edit-2-2" @click="action('setCurrent', task)"></span>
+                <span class="icon icon-trash-2" @click="action('remove', task.id)"></span>
+                <span class="icon icon-more-horizontal-horizontal" @click="action('toggleDetail', task.id)"></span>
+            </div>
+            <div v-if="task.showDetail" class="detail">
+                {{task.desc || '暂无详情'}} | {{task.remind || '暂无提醒时间'}}
+            </div>
+        </div>
+    </template>
+    <script src="assets/js/vue.js"></script>
+    <script src="assets/js/myStorage.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
